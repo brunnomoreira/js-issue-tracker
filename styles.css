@@ -1,0 +1,16 @@
+.clear-search {
+    font-size: 30px; 
+    position: absolute; 
+    right: 80px; 
+    top: -3px; 
+    color: gray;
+    z-index: 3;
+}
+
+.issue-list {
+    height: 500px; 
+    overflow-y: scroll; 
+    border: 1px solid #EEE; 
+    border-radius: 5px; 
+    padding: 10px;
+}

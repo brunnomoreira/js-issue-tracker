@@ -11,6 +11,8 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
 
+    <link rel="stylesheet" href="styles.css">
+
     <title>JS Issue Tracker</title>
 </head>
 
@@ -71,7 +73,7 @@
                         <div class="col-md-8">
                             <div class="input-group">
                                 <input type="text" class="form-control" id="search" name="search" placeholder="Search or filter results...">
-                                <i class="bi bi-x clear-search" style="font-size: 30px; position: absolute; right: 80px; top: -3px; color: gray; z-index: 3;"></i>
+                                <i class="bi bi-x clear-search"></i>
                                 <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
                             </div>
                         </div>
@@ -84,15 +86,15 @@
                     </div>
                 </form>
 
-                <div class="mt-4 issue-list" id="issueListOpen" style="height: 500px; overflow-y: scroll; border: 1px solid #EEE; border-radius: 5px; padding: 10px;">
+                <div class="mt-4 issue-list" id="issueListOpen">
                     <h5 class="text-center default-message">No issues found.</h4>
                 </div>
 
-                <div class="mt-4 issue-list d-none" id="issueListClosed" style="height: 500px; overflow-y: scroll; border: 1px solid #EEE; border-radius: 5px; padding: 10px;">
+                <div class="mt-4 issue-list d-none" id="issueListClosed">
                     <h5 class="text-center default-message">No issues found.</h4>
                 </div>
 
-                <div class="mt-4 issue-list d-none" id="issueListAll" style="height: 500px; overflow-y: scroll; border: 1px solid #EEE; border-radius: 5px; padding: 10px;">
+                <div class="mt-4 issue-list d-none" id="issueListAll">
                     <h5 class="text-center default-message">No issues found.</h4>
                 </div>
             </div>
