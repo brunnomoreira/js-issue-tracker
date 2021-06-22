@@ -1,73 +1,107 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const issueForm = document.querySelector('#issueForm');
-    const searchForm = document.querySelector('#searchForm');
-
-    const badges = {
-        open: document.querySelector('#badgeOpen'),
-        closed: document.querySelector('#badgeClosed'),
-        all: document.querySelector('#badgeAll')
+class App {
+    constructor() {
+        this.issues =  {
+            open: {},
+            closed: {}
+        }
     }
 
-    const lists = {
-        open: document.querySelector('#issueListOpen'),
-        closed: document.querySelector('#issueListClosed'),
-        all: document.querySelector('#issueListAll')
-    };
-
-    const issues = {
-        open: {},
-        closed: {}
+    init() {
+        this.bind();
     }
 
-    const search = document.querySelector("#search");
+    bind() {
+        document.addEventListener('DOMContentLoaded', () => {
+            this.issueForm = document.querySelector('#issueForm');
+            this.searchForm = document.querySelector('#searchForm');
+            this.searchInput = document.querySelector("#search");
+            this.badges = {
+                open: document.querySelector('#badgeOpen'),
+                closed: document.querySelector('#badgeClosed'),
+                all: document.querySelector('#badgeAll')
+            };
+            this.lists = {
+                open: document.querySelector('#issueListOpen'),
+                closed: document.querySelector('#issueListClosed'),
+                all: document.querySelector('#issueListAll')
+            };
 
-    const updateBadges = () => {
-        const opens = Object.keys(issues.open).length;
-        const closed = Object.keys(issues.closed).length;
-        badges.open.textContent = opens;
-        badges.closed.textContent = closed;
-        badges.all.textContent = opens + closed;
+            this.searchForm.addEventListener('submit', event => {
+                this.handleSearch(event);
+            });
+        
+            this.issueForm.addEventListener('submit', event => {
+                this.handleAddIssue(event);
+            });
+        });
+
+        document.addEventListener('click', event => {
+            if(event.target){
+                if(event.target.classList.contains('nav-link')) {
+                    this.handleClickTab(event);
+                }
+                else if(event.target.classList.contains('close-issue')) {
+                    this.handleClickCloseIssue(event);
+                }
+                else if(event.target.classList.contains('delete-issue')) {
+                    this.handleClickDeleteIssue(event);
+                }
+                else if(event.target.classList.contains('reopen-issue')) {
+                    this.handleClickReopenIssue(event);
+                }
+                else if(event.target.classList.contains('clear-search')) {
+                    this.handleClickClearSearch(event);
+                }
+            }
+        });
+    }
+
+    updateBadges() {
+        const opens = Object.keys(this.issues.open).length;
+        const closed = Object.keys(this.issues.closed).length;
+        this.badges.open.textContent = opens;
+        this.badges.closed.textContent = closed;
+        this.badges.all.textContent = opens + closed;
 
         if(opens > 0) {
-            lists.open.querySelector('.default-message').classList.add('d-none');
+            this.lists.open.querySelector('.default-message').classList.add('d-none');
         }
         else {
-            lists.open.querySelector('.default-message').classList.remove('d-none');
+            this.lists.open.querySelector('.default-message').classList.remove('d-none');
         }
 
         if(closed > 0) {
-            lists.closed.querySelector('.default-message').classList.add('d-none');
+            this.lists.closed.querySelector('.default-message').classList.add('d-none');
         }
         else {
-            lists.closed.querySelector('.default-message').classList.remove('d-none');
+            this.lists.closed.querySelector('.default-message').classList.remove('d-none');
         }
 
         if(opens + closed > 0) {
-            lists.all.querySelector('.default-message').classList.add('d-none');
+            this.lists.all.querySelector('.default-message').classList.add('d-none');
         }
         else {
-            lists.all.querySelector('.default-message').classList.remove('d-none');
+            this.lists.all.querySelector('.default-message').classList.remove('d-none');
         }
-        
     }
 
-    const handleClickTab = (event) => {
-        document.querySelectorAll('.nav-link').forEach(nv => {
-            nv.classList.remove('active');
+    handleClickTab(event) {
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
         });
 
-        document.querySelectorAll('.issue-list').forEach(dm => {
-            dm.classList.add('d-none');
+        document.querySelectorAll('.issue-list').forEach(list => {
+            list.classList.add('d-none');
         });
 
         event.target.classList.add('active');
-        lists[event.target.dataset.list].classList.remove('d-none');
+        this.lists[event.target.dataset.list].classList.remove('d-none');
     }
 
-    const handleSearch = (event) => {
+    handleSearch(event) {
         event.preventDefault();
 
-        const searchTerm = search.value.trim();
+        const searchTerm = this.searchInput.value.trim();
 
         document.querySelectorAll(".issue").forEach(issue => {
             const description = issue.querySelector(".issue-description");
@@ -80,18 +114,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const handleClickClearSearch = (event) => {
-        search.value = "";
+    handleClickClearSearch(event) {
+        this.searchInput.value = "";
         document.querySelectorAll(".issue").forEach(issue => {
             issue.classList.remove("d-none");
         });
     }
 
-    const handleClickCloseIssue = (event) => {
+    handleClickCloseIssue(event) {
         let issue = event.target.closest('.issue');
-        lists.open.querySelector(`.issue[data-id="${issue.dataset.id}"]`).remove();
+        this.lists.open.querySelector(`.issue[data-id="${issue.dataset.id}"]`).remove();
         
-        issue = lists.all.querySelector(`.issue[data-id="${issue.dataset.id}"]`);
+        issue = this.lists.all.querySelector(`.issue[data-id="${issue.dataset.id}"]`);
         
         const badge = issue.querySelector('.badge');
         badge.classList.remove('bg-info');
@@ -105,34 +139,34 @@ document.addEventListener('DOMContentLoaded', () => {
         closeBtn.classList.add('reopen-issue');
         closeBtn.textContent = "Reopen";
 
-        lists.closed.append(issue.cloneNode(true));
+        this.lists.closed.append(issue.cloneNode(true));
 
-        issues.closed[issue.dataset.id] = issues.open[issue.dataset.id];
-        delete issues.open[issue.dataset.id];
+        this.issues.closed[issue.dataset.id] = this.issues.open[issue.dataset.id];
+        delete this.issues.open[issue.dataset.id];
 
-        updateBadges();
+        this.updateBadges();
     }
 
-    const handleClickDeleteIssue = (event) => {
+    handleClickDeleteIssue(event) {
         const issue = event.target.closest('.issue');
 
-        if(issues.open[issue.dataset.id]) {
-            delete issues.open[issue.dataset.id];
+        if(this.issues.open[issue.dataset.id]) {
+            delete this.issues.open[issue.dataset.id];
         }
         else {
-            delete issues.closed[issue.dataset.id];
+            delete this.issues.closed[issue.dataset.id];
         }
 
         document.querySelectorAll(`.issue-list .issue[data-id="${issue.dataset.id}"]`).forEach(issue => issue.remove());
 
-        updateBadges();
+        this.updateBadges();
     }
 
-    const handleClickReopenIssue = (event) => {
+    handleClickReopenIssue(event) {
         let issue = event.target.closest('.issue');
-        lists.closed.querySelector(`.issue[data-id="${issue.dataset.id}"]`).remove();
+        this.lists.closed.querySelector(`.issue[data-id="${issue.dataset.id}"]`).remove();
 
-        issue = lists.all.querySelector(`.issue[data-id="${issue.dataset.id}"]`);
+        issue = this.lists.all.querySelector(`.issue[data-id="${issue.dataset.id}"]`);
         const badge = issue.querySelector('.badge');
         badge.classList.remove('bg-danger');
         badge.classList.add('bg-info');
@@ -145,25 +179,25 @@ document.addEventListener('DOMContentLoaded', () => {
         btnReopen.classList.add('close-issue');
         btnReopen.textContent = "Close";
 
-        lists.open.append(issue.cloneNode(true));
+        this.lists.open.append(issue.cloneNode(true));
 
-        issues.open[issue.dataset.id] = issues.closed[issue.dataset.id];
-        delete issues.closed[issue.dataset.id];
+        this.issues.open[issue.dataset.id] = this.issues.closed[issue.dataset.id];
+        delete this.issues.closed[issue.dataset.id];
 
-        updateBadges();
+        this.updateBadges();
     }
 
-    const handleAddIssue = (event) => {
+    handleAddIssue(event) {
         event.preventDefault();
 
         const issue = {
             id: uuidv4(),
-            description: issueForm.elements['description'].value,
-            severity: issueForm.elements['severity'].value,
-            assignedTo: issueForm.elements['assigned_to'].value
+            description: this.issueForm.elements['description'].value,
+            severity: this.issueForm.elements['severity'].value,
+            assignedTo: this.issueForm.elements['assigned_to'].value
         };
 
-        issues.open[issue.id] = issue;
+        this.issues.open[issue.id] = issue;
 
         const content = `
             <div class="card mb-4 issue" data-id="${issue.id}">
@@ -183,39 +217,13 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        lists.open.innerHTML += content;
-        lists.all.innerHTML += content;
+        this.lists.open.innerHTML += content;
+        this.lists.all.innerHTML += content;
 
-        updateBadges();
+        this.updateBadges();
 
-        issueForm.reset();
+        this.issueForm.reset();
     }
+}
 
-    searchForm.addEventListener('submit', event => {
-        handleSearch(event);
-    });
-
-    issueForm.addEventListener('submit', event => {
-        handleAddIssue(event);
-    });
-    
-    document.addEventListener('click', event => {
-        if(event.target){
-            if(event.target.classList.contains('nav-link')) {
-                handleClickTab(event);
-            }
-            else if(event.target.classList.contains('close-issue')) {
-                handleClickCloseIssue(event);
-            }
-            else if(event.target.classList.contains('delete-issue')) {
-                handleClickDeleteIssue(event);
-            }
-            else if(event.target.classList.contains('reopen-issue')) {
-                handleClickReopenIssue(event);
-            }
-            else if(event.target.classList.contains('clear-search')) {
-                handleClickClearSearch(event);
-            }
-        }
-    });
-});
+new App().init();
